@@ -1,0 +1,116 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+
+void Login();
+void Signup();
+bool ValidEmail(string email);
+bool ValidPassword(string password);
+
+int main() {
+    int choice;
+    do {
+        cout << "------------------------------ Welcome!!!!! ----------------------------------" << endl << endl << endl;
+        cout << "                    Already have an account? " << endl;
+        cout << "                      Signup real quick" << endl;
+        cout << "             Enter '1' if you have an account or else '2'" << endl;
+        cout << "                    Enter 0 to exit Application" << endl;
+        cin >> choice;
+        if (choice == 1) {
+            Login();
+        } else if (choice == 2) {
+            Signup();
+        }
+    } while (choice != 0);
+    return 0;
+}
+
+void Login() {
+    string email, password;
+    cout << "Enter Email" << endl;
+    cin >> email;
+
+    cout << "Enter Password" << endl;
+    cin >> password;
+
+    ifstream file(email.c_str());
+    if (!file) {
+        cout << "Invalid Email or Password!" << endl;
+        return;
+    }
+
+    string storedEmail, storedPassword;
+    getline(file, storedEmail);
+    getline(file, storedPassword);
+
+    if (storedEmail == "Email Address:" + email && storedPassword == "Password:" + password) {
+        cout << "Successful Login" << endl;
+    } else {
+        cout << "Invalid Email or Password!" << endl;
+    }
+    file.close();
+}
+
+void Signup() {
+    string email, password, fname, lname, nationality, gender;
+    int date;
+
+    cout << "Enter email" << endl;
+    cin >> email;
+    while (!ValidEmail(email)) {
+        cout << "Invalid Email. Enter email" << endl;
+        cin >> email;
+    }
+
+    cout << "Enter Password" << endl;
+    cin >> password;
+    while (!ValidPassword(password)) {
+        cout << "Invalid Password (Password should have capital and small letter and at least one digit or a special character for eg @,#,_)" << endl;
+        cout << "Enter Password" << endl;
+        cin >> password;
+    }
+
+    ofstream file(email.c_str());
+    file << "Email Address:" << email << endl;
+    file << "Password:" << password << endl;
+    cout << "First Name:";
+    cin >> fname;
+    file << "First Name:" << fname << endl;
+    cout << "Last Name:";
+    cin >> lname;
+    file << "Last Name:" << lname << endl;
+    cout << "Nationality:";
+    cin >> nationality;
+    file << "Nationality:" << nationality << endl;
+    cout << "Date of Birth:";
+    cin >> date;
+    file << "Date of Birth:" << date << endl;
+    cout << "Gender:";
+    cin >> gender;
+    file << "Gender:" << gender << endl;
+    file.close();
+
+    cout << "Signup Successful!" << endl;
+}
+
+bool ValidEmail(string email) {
+    int atCount = 0;
+    for (char c : email) {
+        if (c == '@') {
+            atCount++;
+        }
+    }
+    return atCount == 1;
+}
+
+bool ValidPassword(string password) {
+    bool hasUpper = false, hasLower = false, hasDigit = false, hasSpecial = false;
+    for (char c : password) {
+        if (isupper(c)) hasUpper = true;
+        if (islower(c)) hasLower = true;
+        if (isdigit(c)) hasDigit = true;
+        if (ispunct(c)) hasSpecial = true;
+    }
+    return hasUpper && hasLower && (hasDigit || hasSpecial);
+}
